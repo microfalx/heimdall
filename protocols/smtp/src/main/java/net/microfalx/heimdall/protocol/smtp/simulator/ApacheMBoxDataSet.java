@@ -110,7 +110,9 @@ public class ApacheMBoxDataSet extends MBoxDataSet {
 
         @Override
         public MimeMessage next() {
-            return next;
+            MimeMessage current = next;
+            next = null;
+            return current;
         }
     }
 

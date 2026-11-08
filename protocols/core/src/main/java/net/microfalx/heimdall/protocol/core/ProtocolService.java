@@ -15,6 +15,7 @@ import net.microfalx.heimdall.protocol.core.simulator.ProtocolSimulatorPropertie
 import net.microfalx.lang.EnumUtils;
 import net.microfalx.lang.ObjectUtils;
 import net.microfalx.lang.StringUtils;
+import net.microfalx.lang.TextUtils;
 import net.microfalx.metrics.Metrics;
 import net.microfalx.resource.MimeType;
 import net.microfalx.resource.Resource;
@@ -356,7 +357,7 @@ public abstract class ProtocolService<E extends Event, M extends net.microfalx.h
                     newAddressJpa.setType(address.getType());
                     newAddressJpa.setName(resolveName(address));
                     newAddressJpa.setValue(addressValue);
-                    addressRepository.save(newAddressJpa);
+                    addressRepository.saveAndFlush(newAddressJpa);
                     return newAddressJpa;
                 });
                 addressCache.put(addressValue, addressJpa);
@@ -473,7 +474,9 @@ public abstract class ProtocolService<E extends Event, M extends net.microfalx.h
             net.microfalx.heimdall.protocol.core.jpa.Part partJpa = new net.microfalx.heimdall.protocol.core.jpa.Part();
             partJpa.setType(part.getType());
             if (!NA_STRING.equals(part.getName())) {
-                partJpa.setName(org.apache.commons.lang3.StringUtils.abbreviate(part.getName(), MAX_NAME_LENGTH));
+                String name = part.getName();
+                if (TextUtils.isBinaryContent(name)) name = "[Binary Content]";
+                partJpa.setName(org.apache.commons.lang3.StringUtils.abbreviate(name, MAX_NAME_LENGTH));
             }
             partJpa.setFileName(part.getFileName());
             if (part instanceof AbstractPart apart) {

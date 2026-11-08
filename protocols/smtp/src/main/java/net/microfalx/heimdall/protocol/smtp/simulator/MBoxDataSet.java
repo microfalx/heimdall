@@ -7,6 +7,7 @@ import net.microfalx.heimdall.protocol.core.ProtocolUtils;
 import net.microfalx.heimdall.protocol.core.simulator.AbstractProtocolDataSet;
 import net.microfalx.heimdall.protocol.core.simulator.AbstractProtocolDataSetFactory;
 import net.microfalx.lang.ExceptionUtils;
+import net.microfalx.lang.FormatterUtils;
 import net.microfalx.lang.IOUtils;
 import net.microfalx.metrics.Metrics;
 import net.microfalx.resource.Resource;
@@ -41,7 +42,9 @@ public class MBoxDataSet extends AbstractProtocolDataSet<MimeMessage, Field<Mime
     public @NotNull Iterator<MimeMessage> iterator() {
         CharsetEncoder ENCODER = StandardCharsets.UTF_8.newEncoder();
         try {
-            MboxIterator iterator = MboxIterator.fromFile(getFile()).charset(ENCODER.charset()).build();
+            MboxIterator iterator = MboxIterator.fromFile(getFile())
+                    .maxMessageSize((int) FormatterUtils.M).charset(ENCODER.charset())
+                    .build();
             return new IteratorImpl(iterator);
         } catch (IOException e) {
             return ExceptionUtils.rethrowExceptionAndReturn(e);
