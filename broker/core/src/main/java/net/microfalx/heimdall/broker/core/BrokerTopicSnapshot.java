@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import net.microfalx.lang.Identifiable;
+import net.microfalx.lang.Serde;
 import net.microfalx.lang.StringUtils;
 import net.microfalx.lang.TimeUtils;
 
@@ -103,12 +104,7 @@ public class BrokerTopicSnapshot {
      * @param outputStream the output stream
      */
     public void serialize(OutputStream outputStream) {
-        requireNotEmpty(outputStream);
-        Output output = new Output(outputStream);
-        Kryo kryo = new Kryo();
-        kryo.setRegistrationRequired(false);
-        kryo.writeClassAndObject(output, this);
-        output.close();
+        Serde.serialize(this, outputStream);
     }
 
     /**
@@ -118,11 +114,7 @@ public class BrokerTopicSnapshot {
      * @return a non-null instance
      */
     public static BrokerTopicSnapshot deserialize(InputStream inputStream) {
-        requireNotEmpty(inputStream);
-        Input input = new Input(inputStream);
-        Kryo kryo = new Kryo();
-        kryo.setRegistrationRequired(false);
-        return (BrokerTopicSnapshot) kryo.readClassAndObject(input);
+        return Serde.deserialize(inputStream);
     }
 
     /**
